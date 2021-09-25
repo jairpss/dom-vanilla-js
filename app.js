@@ -23,17 +23,46 @@
 //     lista.innerHTML += `<li>${item}</li>`;
 // })
 
-const btnAumentar = document.querySelector('.btn-info');
-const btnDisminuir = document.querySelector('.btn-danger');
-const span = document.getElementById('resultado');
-let contador = 0;
+//Counter
+// const btnAumentar = document.querySelector('.btn-info');
+// const btnDisminuir = document.querySelector('.btn-danger');
+// const span = document.getElementById('resultado');
+// let contador = 0;
 
-btnAumentar.addEventListener('click', () => {
-    contador++;
-    span.textContent = contador;
-})
+// btnAumentar.addEventListener('click', () => {
+//     contador++;
+//     span.textContent = contador;
+// })
 
-btnDisminuir.addEventListener('click', () => {
-    contador--;
-    span.textContent = contador;
-})
+// btnDisminuir.addEventListener('click', () => {
+//     contador--;
+//     span.textContent = contador;
+// })
+
+const items = document.getElementById('items');
+const templateCard = document.getElementById('template-card').content;
+const fragment = document.createDocumentFragment();
+
+document.addEventListener('DOMContentLoaded', () => {
+    fetchData();
+});
+
+const fetchData = async () => {
+    try {
+        const res = await fetch('api.json');
+        const data = await res.json();
+        pintarCards(data);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const pintarCards = data => {
+    data.forEach(producto => {
+        templateCard.querySelector('h5').textContent = producto.title;
+
+        const clone = templateCard.cloneNode(true);
+        fragment.appendChild(clone);
+    })
+    items.appendChild(fragment);
+}
