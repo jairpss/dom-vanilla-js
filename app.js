@@ -51,12 +51,17 @@ let carrito = {};
 //Events
 document.addEventListener('DOMContentLoaded', () => {
     fetchData();
+    if (localStorage.getItem('carrito')) {
+        carrito = JSON.parse(localStorage.getItem('carrito'))
+        pintarCarrito();
+    }
 });
 
 cards.addEventListener('click', e => {
     addCarrito(e);
 });
 
+items.addEventListener('click', e => { btnAumentarDisminuir(e) })
 //Traer productos desde json
 const fetchData = async () => {
     try {
@@ -120,9 +125,11 @@ const pintarCarrito = () => {
         const clone = templateCarrito.cloneNode(true)
         fragment.appendChild(clone);
     })
-    items.appendChild(fragment)
+    items.appendChild(fragment);
 
     pintarFooter();
+
+    localStorage.setItem('carrito', JSON.stringify(carrito));
 }
 
 const pintarFooter = () => {
@@ -130,7 +137,7 @@ const pintarFooter = () => {
     
     if (Object.keys(carrito).length === 0) {
         footer.innerHTML = `
-        <th scope="row" colspan="5">Carrito vacío con innerHTML</th>
+        <th scope="row" colspan="5">Carrito vacío - comience a comprar!</th>
         `
         return
     }
@@ -152,4 +159,27 @@ const pintarFooter = () => {
         carrito = {};
         pintarCarrito();
     })
+}
+
+const btnAumentarDisminuir = e => {
+    // console.log(e.target.classList.contains('btn-info'))
+    if (e.target.classList.contains('btn-info')) {
+        const producto = carrito[e.target.dataset.id]
+        producto.cantidad++;
+        carrito[e.target.dataset.id] = { ...producto }
+        pintarCarrito();
+    }
+
+    if (e.target.classList.contains('btn-danger')) {
+        const producto = carrito[e.target.dataset.id]
+        producto.cantidad--;
+        if (producto.cantidad === 0) {
+            delete carrito[e.target.dataset.id]
+        } else {
+            carrito[e.target.dataset.id] = {...producto}
+        }
+        pintarCarrito();
+    }
+
+    e.stopPropagation();
 }
